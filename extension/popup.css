@@ -1,0 +1,29 @@
+:root { color-scheme: light dark; --page: #f7f6fa; --card: #fff; --text: #272331; --muted: #746e80; --border: #e6e2ed; --accent: #7052bc; }
+* { box-sizing: border-box; }
+body { width: 360px; margin: 0; background: var(--page); color: var(--text); font: 13px/1.6 system-ui, "Microsoft YaHei", sans-serif; }
+header { display: flex; align-items: center; gap: 11px; padding: 22px 20px 18px; }
+.app-mark { flex-shrink: 0; width: 40px; height: 40px; object-fit: contain; }
+h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: .02em; }
+header p { margin: 1px 0 0; color: var(--muted); font-size: 11px; }
+.version { margin-left: auto; color: var(--muted); font-size: 11px; }
+main { padding: 0 16px; }
+.settings { overflow: hidden; padding: 0 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; cursor: pointer; }
+.setting-row + .setting-row { border-top: 1px solid var(--border); }
+small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+input[type="checkbox"] { flex-shrink: 0; width: 16px; height: 16px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+input[role="switch"] { width: 18px; height: 18px; }
+select { max-width: 160px; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); font: inherit; font-size: 12px; }
+.guide { margin-top: 16px; padding: 0 4px; }
+h2 { margin: 0 0 8px; font-size: 12px; font-weight: 650; }
+ol { padding-left: 20px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.95; }
+.guide p { margin: 9px 0 0; color: var(--muted); font-size: 10px; }
+#save-status { min-height: 18px; margin: 12px 4px; color: var(--muted); font-size: 10px; }
+#save-status.error { color: #be4949; }
+footer { display: flex; justify-content: space-between; padding: 13px 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 10px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:is(input, select, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-color-scheme: dark) {
+  :root { --page: #201d27; --card: #292530; --text: #eeeaf5; --muted: #b0a9bd; --border: #3e374b; --accent: #c1a7f1; }
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HE-Music 歌词下载助手</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="lyrics.js" defer></script>
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <header>
+    <img class="app-mark" src="icons/icon-128.png" width="40" height="40" alt="歌词下载助手 Logo">
+    <div><h1>歌词下载助手</h1><p>为 HE-Music 补上歌词文件</p></div>
+    <span class="version">v1.0.3</span>
+  </header>
+  <main>
+    <section class="settings" aria-label="默认歌词下载设置">
+      <label class="setting-row"><span><strong>同时下载歌词</strong><small>点击原站“下载歌曲”时一并保存</small></span><input id="enabled" type="checkbox" role="switch"></label>
+      <label class="setting-row"><span>默认文件格式</span><select id="format"><option value="lrc">LRC · 带时间轴</option><option value="txt">TXT · 纯文本</option></select></label>
+      <label class="setting-row"><span>附带翻译<small>仅在来源提供译文时加入</small></span><input id="includeTranslation" type="checkbox"></label>
+      <label class="setting-row"><span>附带罗马音</span><input id="includeRomanization" type="checkbox"></label>
+      <label class="setting-row"><span>下载时询问保存位置<small>仅影响歌词，音频仍由原站下载</small></span><input id="saveAs" type="checkbox"></label>
+    </section>
+    <section class="guide" aria-label="使用说明">
+      <h2>在原来的下载窗口里使用</h2>
+      <ol><li>在歌曲菜单选择“下载歌曲”。</li><li>选择音质，再勾选“同时下载歌词”。</li><li>下载歌曲，或点击“仅下载歌词”。</li></ol>
+      <p>无时间轴的歌词自动保存为 TXT。翻译、罗马音是否可用，取决于歌曲来源。</p>
+    </section>
+    <p id="save-status" role="status" aria-live="polite">设置自动保存</p>
+  </main>
+  <footer><span>仅在 y.hmusic.top 运行</span><a href="https://y.hmusic.top/" target="_blank" rel="noopener noreferrer">打开 HE-Music ↗</a></footer>
+</body>
+</html>

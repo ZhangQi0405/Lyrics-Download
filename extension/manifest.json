@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "HE-Music 歌词下载助手",
+  "version": "1.0.3",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "description": "在 HE-Music 原生下载弹窗中选择同时下载 LRC 或 TXT 歌词，保留原站音频下载流程。",
+  "minimum_chrome_version": "111",
+  "permissions": ["storage", "downloads"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "HE-Music 歌词下载助手",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://y.hmusic.top/*"],
+      "js": ["site-adapter.js", "page-bridge.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://y.hmusic.top/*"],
+      "js": ["lyrics.js", "content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

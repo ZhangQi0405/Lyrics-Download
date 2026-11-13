@@ -1,0 +1,25 @@
+# 扩展签名私钥与本地凭据
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+!.env.example
+
+# 生成的安装包与本地诊断数据
+dist/
+diagnostics/
+*.crx
+
+# 依赖、测试覆盖率与运行日志
+node_modules/
+coverage/
+__pycache__/
+*.py[cod]
+*.log
+
+# 操作系统临时文件
+.DS_Store
+Thumbs.db
+Desktop.ini
