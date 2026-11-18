@@ -147,7 +147,7 @@
     section.setAttribute("aria-label", "歌词下载选项");
     const heading = element("div", "he-lyrics-heading");
     const enabled = checkbox("同时下载歌词", "he-lyrics-main-check");
-    heading.append(enabled.label, element("span", "he-lyrics-badge", "歌词助手 v1.0.3"));
+    heading.append(enabled.label, element("span", "he-lyrics-badge", "歌词助手 v1.0.4"));
     const description = element("p", "he-lyrics-description", "歌词单独保存，不改动原站音频下载流程。");
     const controls = element("div", "he-lyrics-controls");
     const formatLabel = element("label", "he-lyrics-format", "格式");
