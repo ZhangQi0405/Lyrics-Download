@@ -82,8 +82,13 @@ test("同一弹窗切换歌曲时使用新歌曲，而非上一首缓存", async
 
 test("支持网站直接导出歌词函数", async () => {
   const Client = async (config) => config.params;
-  const direct = (id, platform) => Client({ url: "/v1/song/lyric", params: { id, platform } });
+  let options;
+  const direct = (id, platform, config) => {
+    options = config;
+    return Client({ ...config, url: "/v1/song/lyric", params: { id, platform } });
+  };
   assert.deepEqual(await findLyricRequest({ renamed: direct })("7", "other"), { id: "7", platform: "other" });
+  assert.deepEqual(options, { timeout: 15000, skipErrorMessage: true });
 });
 
 test("无法识别请求函数时准确报适配错误，不声称网站接口已改变", () => {
@@ -176,4 +181,75 @@ test("找不到同源歌曲模块时明确报错", async () => {
     origin: "https://y.hmusic.top", loadModule: () => { throw new Error("不应调用"); },
   });
   await assert.rejects(adapter.getContext("test-token"), /未找到网站的歌曲模块/);
+});
+
+function moduleFixture({ preloads = [], resources = [], loadModule }) {
+  const { app, modal, exports } = fixture();
+  const adapter = createAdapter({
+    document: {
+      querySelector: (selector) => selector === "#app" ? app : modal,
+      querySelectorAll: () => preloads,
+    },
+    performance: { getEntriesByType: () => resources.map((name) => ({ name })) },
+    origin: "https://y.hmusic.top",
+    loadModule: (url) => loadModule(url, exports),
+  });
+  return adapter;
+}
+
+test("只从预加载标签发现新版主窗口模块并调用它直接导出的歌词函数", async () => {
+  const imports = [];
+  const requests = [];
+  const url = "https://y.hmusic.top/assets/mainWindow-newHash_012.js";
+  const client = async (config) => {
+    requests.push(config);
+    return { lyric: "[00:01]新版歌词" };
+  };
+  const direct = (id, platform, config = {}) => client({ ...config, url: "/v1/song/lyric", params: { id, platform } });
+  const adapter = moduleFixture({ preloads: [{ href: url }], loadModule: async (value, exports) => {
+    imports.push(value);
+    return { info: exports.info, direct };
+  } });
+  const [context, file] = await Promise.all([adapter.getContext("test-token"), adapter.getLyrics("test-token")]);
+  assert.equal(context.filenameBase, "歌手&A - 歌曲");
+  assert.deepEqual(file.lyrics, { lyric: "[00:01]新版歌词" });
+  assert.deepEqual(imports, [url]);
+  assert.deepEqual(requests, [{ url: "/v1/song/lyric", params: { id: "42", platform: "kuwo" },
+    timeout: 15000, skipErrorMessage: true }]);
+});
+
+test("跳过不提供歌词的候选、导入失败的候选、重复资源和外站模块", async () => {
+  const imports = [];
+  const origin = "https://y.hmusic.top";
+  const working = `${origin}/assets/stores-working.js`;
+  const notSupported = `${origin}/assets/mainWindow-noLyric.js`;
+  const failed = `${origin}/assets/mainWindow-failed.js`;
+  const adapter = moduleFixture({
+    preloads: [{ src: working }, { href: failed }],
+    resources: [notSupported, failed, "https://outside.invalid/assets/stores-ignore.js", `${origin}/assets/vendor-ignore.js`],
+    loadModule: async (url, exports) => {
+      imports.push(url);
+      if (url === failed) throw new Error("网络错误");
+      return url === working ? exports : {};
+    },
+  });
+  const { lyrics } = await adapter.getLyrics("test-token");
+  assert.equal(lyrics.lyric, "[00:01.000]歌词");
+  assert.deepEqual(imports, [failed, notSupported, working]);
+});
+
+test("初次加载失败后允许重新查找已加载的新版模块", async () => {
+  const preloads = [{ href: "/assets/mainWindow-failed.js" }];
+  const adapter = moduleFixture({ preloads, loadModule: async (url, exports) => {
+    if (url.endsWith("/mainWindow-failed.js")) throw new Error("内部请求细节");
+    return exports;
+  } });
+  await assert.rejects(adapter.getLyrics("test-token"), /歌曲模块加载失败/);
+  preloads.push({ href: "/assets/mainWindow-ready.js" });
+  assert.equal((await adapter.getLyrics("test-token")).lyrics.lyric, "[00:01.000]歌词");
+});
+
+test("候选模块已加载但不再导出歌词函数时提示更新扩展", async () => {
+  const adapter = moduleFixture({ preloads: [{ href: "/assets/mainWindow-new.js" }], loadModule: async () => ({}) });
+  await assert.rejects(adapter.getLyrics("test-token"), /无法识别网站的歌词请求函数/);
 });
